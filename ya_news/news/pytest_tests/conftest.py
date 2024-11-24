@@ -5,6 +5,7 @@ from django.conf import settings
 from django.test.client import Client
 from django.urls import reverse
 from django.utils import timezone
+
 from news.models import Comment, News
 
 COMMENT_TEXT = 'Текст комментария'
@@ -56,15 +57,6 @@ def news_detail_url(news):
 
 
 @pytest.fixture
-def fill_homepage_with_news():
-    all_news = [
-        News(title=f'Новость {index}', text='Просто текст.')
-        for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
-    ]
-    News.objects.bulk_create(all_news)
-
-
-@pytest.fixture
 def news_order_check(author, news):
     today = timezone.now()
     all_news = [
@@ -97,3 +89,25 @@ def comment(news, author):
         text=COMMENT_TEXT,
     )
     return comment
+
+
+@pytest.fixture
+def edit_comment_url(comment):
+    return reverse('news:edit', args=(comment.id,))
+
+
+@pytest.fixture
+def news_detail_url(news):
+    return reverse('news:detail', args=(news.id,))
+
+
+@pytest.fixture
+def reverse_url(comment):
+    return {
+        'news:home': reverse('news:home'),
+        'users:login': reverse('users:login'),
+        'users:logout': reverse('users:logout'),
+        'users:signup': reverse('users:signup'),
+        'news:edit': reverse('news:edit', args=(comment.id,)),
+        'news:delete': reverse('news:delete', args=(comment.id,)),
+    }

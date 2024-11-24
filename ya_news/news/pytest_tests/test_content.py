@@ -5,10 +5,9 @@ from news.forms import CommentForm
 HOME_URL = reverse('news:home')
 
 
-def test_news_count(client, fill_homepage_with_news):
+def test_news_count(client, news_order_check):
     response = client.get(HOME_URL)
-    object_list = response.context['object_list']
-    news_count = object_list.count()
+    news_count = response.context['object_list'].count()
     assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
