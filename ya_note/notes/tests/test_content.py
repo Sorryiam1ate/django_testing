@@ -43,9 +43,15 @@ class TestContent(BaseTestCase):
 
         cls.urls_list = {
             'notes:list': reverse('notes:list'),
-            'notes:detail': reverse('notes:detail', kwargs={'slug': cls.note.slug}),
+            'notes:detail': reverse(
+                'notes:detail',
+                kwargs={'slug': cls.note.slug}
+            ),
             'notes:add': reverse('notes:add'),
-            'notes:edit': reverse('notes:edit', kwargs={'slug': cls.note.slug}),
+            'notes:edit': reverse(
+                'notes:edit',
+                kwargs={'slug': cls.note.slug}
+            ),
         }
 
     def test_note_in_list_for_author(self):

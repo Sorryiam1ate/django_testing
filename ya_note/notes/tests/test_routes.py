@@ -43,9 +43,18 @@ class TestRoutes(BaseTestCase):
             'notes:list': reverse('notes:list'),
             'notes:add': reverse('notes:add'),
             'notes:success': reverse('notes:success'),
-            'notes:detail': reverse('notes:detail', kwargs={'slug': cls.note.slug}),
-            'notes:edit': reverse('notes:edit', kwargs={'slug': cls.note.slug}),
-            'notes:delete': reverse('notes:delete', kwargs={'slug': cls.note.slug}),
+            'notes:detail': reverse(
+                'notes:detail',
+                kwargs={'slug': cls.note.slug}
+            ),
+            'notes:edit': reverse(
+                'notes:edit',
+                kwargs={'slug': cls.note.slug}
+            ),
+            'notes:delete': reverse(
+                'notes:delete',
+                kwargs={'slug': cls.note.slug}
+            ),
         }
 
     def test_pages_available_for_all(self):

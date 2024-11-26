@@ -1,7 +1,5 @@
 from http import HTTPStatus
 
-from django.urls import reverse
-
 from news.forms import BAD_WORDS, WARNING
 from news.models import Comment
 
