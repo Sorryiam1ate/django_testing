@@ -10,7 +10,9 @@ class BaseTestCase(TestCase):
     def setUpTestData(cls):
         # Создание авторов
         cls.author = User.objects.create(username='testuser')
-        cls.not_author_user = User.objects.create(username='not_author_user')
+        cls.not_author_user = User.objects.create(
+            username='not_author_user'
+        )
 
         # Настройка клиентов
         cls.author_user_client = Client()
@@ -42,7 +44,16 @@ class BaseTestCase(TestCase):
             'notes:list': reverse('notes:list'),
             'notes:add': reverse('notes:add'),
             'notes:success': reverse('notes:success'),
-            'notes:detail': reverse('notes:detail', kwargs={'slug': cls.note.slug}),
-            'notes:edit': reverse('notes:edit', kwargs={'slug': cls.note.slug}),
-            'notes:delete': reverse('notes:delete', kwargs={'slug': cls.note.slug}),
+            'notes:detail': reverse(
+                'notes:detail',
+                kwargs={'slug': cls.note.slug}
+            ),
+            'notes:edit': reverse(
+                'notes:edit',
+                kwargs={'slug': cls.note.slug}
+            ),
+            'notes:delete': reverse(
+                'notes:delete',
+                kwargs={'slug': cls.note.slug}
+            ),
         }
