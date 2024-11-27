@@ -1,9 +1,9 @@
 from http import HTTPStatus
 
+from pytest_django.asserts import assertRedirects
+
 from news.forms import BAD_WORDS, WARNING
 from news.models import Comment
-
-from pytest_django.asserts import assertRedirects
 
 COMMENT_TEXT = 'Текст комментария'
 NEW_COMMENT_TEXT = 'Новый текст'
@@ -39,42 +39,38 @@ def test_user_cant_use_bad_words(author_client, news_detail_url):
     comments_count_initial = Comment.objects.count()
     bad_words_data = {'text': f'Какой-то текст, {BAD_WORDS[0]}, еще текст'}
     response = author_client.post(news_detail_url, data=bad_words_data)
+    comments_count_result = Comment.objects.count()
+    assert comments_count_initial == comments_count_result
     form = response.context['form']
     assert 'text' in form.errors
     assert WARNING in form.errors['text']
-    comments_count_result = Comment.objects.count()
-    assert comments_count_initial == comments_count_result
 
 
 def test_author_can_edit_comment(
     author_client,
     comment,
-    edit_comment_url,
+    reverse_url,
     news_detail_url,
 ):
-    old_author = comment.author
-    old_news = comment.news
     form_data = {'text': NEW_COMMENT_TEXT}
-    response = author_client.post(edit_comment_url, data=form_data)
+    response = author_client.post(reverse_url['news:edit'], data=form_data)
     url_to_comments = news_detail_url + '#comments'
     assertRedirects(response, url_to_comments)
     updated_comment = Comment.objects.get(id=comment.id)
     assert updated_comment.text == form_data['text']
-    assert updated_comment.author == old_author
-    assert updated_comment.news == old_news
+    assert updated_comment.author == comment.author
+    assert updated_comment.news == comment.news
 
 
 def test_user_cant_edit_comment_of_another_user(
         not_author_client,
         comment,
-        edit_comment_url,
+        reverse_url,
 ):
-    old_author = comment.author
-    old_news = comment.news
     form_data = {'text': NEW_COMMENT_TEXT}
-    response = not_author_client.post(edit_comment_url, data=form_data)
+    response = not_author_client.post(reverse_url['news:edit'], data=form_data)
     assert response.status_code == HTTPStatus.NOT_FOUND
     updated_comment = Comment.objects.get(id=comment.id)
     assert updated_comment.text == COMMENT_TEXT
-    assert updated_comment.author == old_author
-    assert updated_comment.news == old_news
+    assert updated_comment.author == comment.author
+    assert updated_comment.news == comment.news

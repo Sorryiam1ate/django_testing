@@ -90,7 +90,6 @@ class TestRoutes(BaseTestCase):
         )
         for name in urls:
             with self.subTest(name=name):
-
                 response = self.author_user_client.get(
                     self.urls_list[name]
                 )
@@ -100,7 +99,6 @@ class TestRoutes(BaseTestCase):
                 not_auth_user_response = self.client.get(
                     self.urls_list[name]
                 )
-
                 self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertEqual(
                     not_auth_user_response.status_code, HTTPStatus.FOUND)

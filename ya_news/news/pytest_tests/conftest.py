@@ -92,16 +92,6 @@ def comment(news, author):
 
 
 @pytest.fixture
-def edit_comment_url(comment):
-    return reverse('news:edit', args=(comment.id,))
-
-
-@pytest.fixture
-def news_detail_url(news):
-    return reverse('news:detail', args=(news.id,))
-
-
-@pytest.fixture
 def reverse_url(comment):
     return {
         'news:home': reverse('news:home'),

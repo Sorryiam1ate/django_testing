@@ -1,18 +1,17 @@
 from django.conf import settings
 from django.urls import reverse
+
 from news.forms import CommentForm
 
-HOME_URL = reverse('news:home')
 
-
-def test_news_count(client, news_order_check):
-    response = client.get(HOME_URL)
+def test_news_count(client, news_order_check, reverse_url):
+    response = client.get(reverse_url['news:home'])
     news_count = response.context['object_list'].count()
     assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
-def test_news_order(client, news_order_check):
-    response = client.get(HOME_URL)
+def test_news_order(client, news_order_check, reverse_url):
+    response = client.get(reverse_url['news:home'])
     object_list = response.context['object_list']
     all_dates = [news.date for news in object_list]
     sorted_dates = sorted(all_dates, reverse=True)
