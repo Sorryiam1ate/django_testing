@@ -1,61 +1,9 @@
 from http import HTTPStatus
 
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
-from django.urls import reverse
-
-from notes.models import Note
-
-
-class BaseTestCase(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.author = User.objects.create(
-            username='testuser',
-        )
-        cls.not_author_user = User.objects.create(
-            username='not_author_user',
-        )
-
-        cls.author_user_client = Client()
-        cls.author_user_client.force_login(cls.author)
-
-        cls.not_author_user_client = Client()
-        cls.not_author_user_client.force_login(cls.not_author_user)
-
-        cls.note = Note.objects.create(
-            title='Заголовок',
-            text='Текст',
-            slug='test-slug',
-            author=cls.author,
-        )
+from notes.tests.conftest import BaseTestCase
 
 
 class TestRoutes(BaseTestCase):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        cls.urls_list = {
-            'notes:home': reverse('notes:home'),
-            'users:login': reverse('users:login'),
-            'users:logout': reverse('users:logout'),
-            'users:signup': reverse('users:signup'),
-            'notes:list': reverse('notes:list'),
-            'notes:add': reverse('notes:add'),
-            'notes:success': reverse('notes:success'),
-            'notes:detail': reverse(
-                'notes:detail',
-                kwargs={'slug': cls.note.slug}
-            ),
-            'notes:edit': reverse(
-                'notes:edit',
-                kwargs={'slug': cls.note.slug}
-            ),
-            'notes:delete': reverse(
-                'notes:delete',
-                kwargs={'slug': cls.note.slug}
-            ),
-        }
 
     def test_pages_available_for_all(self):
         urls = (
@@ -93,17 +41,28 @@ class TestRoutes(BaseTestCase):
                 response = self.author_user_client.get(
                     self.urls_list[name]
                 )
+                self.assertEqual(
+                    response.status_code,
+                    HTTPStatus.OK,
+                )
+
+            with self.subTest(name=name):
                 not_author_user_response = self.not_author_user_client.get(
                     self.urls_list[name]
                 )
+                self.assertEqual(
+                    not_author_user_response.status_code,
+                    HTTPStatus.NOT_FOUND
+                )
+
+            with self.subTest(name=name):
                 not_auth_user_response = self.client.get(
                     self.urls_list[name]
                 )
-                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertEqual(
-                    not_auth_user_response.status_code, HTTPStatus.FOUND)
-                self.assertEqual(
-                    not_author_user_response.status_code, HTTPStatus.NOT_FOUND)
+                    not_auth_user_response.status_code,
+                    HTTPStatus.FOUND
+                )
 
     def test_redirect(self):
         urls = (
